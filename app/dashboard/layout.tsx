@@ -3,8 +3,13 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { DashboardLinks } from "../components/DashboardLinks";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Menu, User2 } from "lucide-react";
 
 import windowLogo from "@/public/window.svg";
+import { signOut } from "../utils/auth";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await requireUser();
@@ -28,7 +33,54 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
         </div>
         <div className="flex flex-col">
-          <header className="flex h-14 items-center gap-4 border-b bg-muted/40 lg:h-[60px] lg:px-6">{/*  */}</header>
+          <header className="flex h-14 items-center gap-4 border-b bg-muted/40 lg:h-[60px] lg:px-6">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant={"outline"} size={"icon"} className="md:hidden mx-3">
+                  <Menu className="size-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left">
+                <nav className="grid gap-2 mt-10">
+                  <DashboardLinks />
+                </nav>
+              </SheetContent>
+            </Sheet>
+            <div className="flex items-center ml-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="rounded-full" variant={"outline"} size={"icon"}>
+                    <User2 />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel> My Profile </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard">Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/invoices">Invoices</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <form
+                      className="w-full"
+                      action={async () => {
+                        "use server";
+                        await signOut();
+                      }}
+                    >
+                      <Button className="w-full text-left" type="submit">
+                        Log Out
+                      </Button>
+                    </form>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </header>
+          <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">{children}</main>
         </div>
       </div>
     </>
